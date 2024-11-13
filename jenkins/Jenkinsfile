@@ -28,7 +28,7 @@ pipeline {
             steps {
                 container ('kaniko') {
                 script {
-		    def GIT_DIR=${context.WORKSPACE}
+		    def GIT_DIR=context.WORKSPACE
                     def test="sample_value"
                     echo test
 		    echo GIT_DIR
