@@ -28,8 +28,10 @@ pipeline {
             steps {
                 container ('kaniko') {
                 script {
+		    def GIT_DIR=${context.WORKSPACE}
                     def test="sample_value"
                     echo test
+		    echo GIT_DIR
                     sh """
                         echo ${test}
                         /kaniko/executor --dockerfile /mnt/Dockerfile --context /mnt --context=dir:///mnt --destination pkuszczak/jenkinstest:latest --build-arg "TEST=${test}" --cache-dir=/kaniko-cache
