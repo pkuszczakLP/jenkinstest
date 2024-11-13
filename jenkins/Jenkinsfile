@@ -1,0 +1,43 @@
+pipeline {
+    agent { label 'kaniko' }
+
+    stages {
+        stage('Prepare credentials') {
+            steps {
+                container ('kaniko') {
+                script {
+  withCredentials([usernamePassword(credentialsId: 'mycreds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+    sh '''
+		AUTH=$(echo -n $USERNAME:$PASSWORD | base64)
+		cat > /kaniko/.docker/config.json <<-EOF
+		{
+  "auths": {
+    "https://index.docker.io/v1/": {
+      "auth": "$AUTH"
+    }
+  }
+}
+		EOF
+    '''
+  }
+}
+            }
+        }
+		}
+        stage('Build Image') {
+            steps {
+                container ('kaniko') {
+                script {
+                    def test="sample_value"
+                    echo test
+                    sh """
+                        echo ${test}
+                        /kaniko/executor --dockerfile /mnt/Dockerfile --context /mnt --context=dir:///mnt --destination pkuszczak/jenkinstest:latest --build-arg "TEST=${test}" --cache-dir=/kaniko-cache
+                    """
+
+                }
+            }
+				}
+        }
+    }
+}
